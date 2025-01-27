@@ -3,24 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NASA Image of the Day</title>
+  <title>NASA APOD Viewer</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>NASA Image of the Day</h1>
-    <label for="date-picker">Select a Date:</label>
-    <input type="date" id="date-picker">
-    <button id="fetch-image">Get Image</button>
-    <div id="navigation">
-      <button id="prev-image">Previous</button>
-      <button id="next-image">Next</button>
-    </div>
-    <div id="content">
-      <h2 id="title"></h2>
-      <p id="description"></p>
-      <img id="image" alt="NASA Image of the Day">
-    </div>
+  <h1 id="title">NASA Astronomy Picture of the Day</h1>
+  <div id="image-container">
+    <img id="image" alt="NASA APOD">
+    <button id="save">Save Image</button>
+  </div>
+  <p id="description"></p>
+  <div id="buttons">
+    <button id="previous">Previous</button>
+    <button id="next">Next</button>
   </div>
   <script src="script.js"></script>
 </body>

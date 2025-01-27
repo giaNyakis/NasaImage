@@ -1,63 +1,51 @@
 const apiKey = "W8WjrXJh0B4QVZAqYxUuv5rlbpaMaAeGESdynC00"; // Αν έχεις προσωπικό API Key, βάλε το εδώ
 
-const apiUrl = "https://api.nasa.gov/planetary/apod";
-let currentDate = new Date().toISOString().split("T")[0]; // Η σημερινή ημερομηνία
+const today = new Date().toISOString().split("T")[0];
+let currentDate = today;
 
-// Φέρνει την εικόνα με βάση την ημερομηνία
-async function fetchImageByDate(date) {
-  const url = `${apiUrl}?api_key=${apiKey}&date=${date}`;
+// Ενημέρωση εικόνας από API
+const updateImage = async (date) => {
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error("Failed to fetch the NASA Image of the Day.");
-    }
+    const response = await fetch(
+      `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${date}`
+    );
     const data = await response.json();
-    console.log(data);
-    displayData(data);
-    currentDate = date; // Ενημέρωση της τρέχουσας ημερομηνίας
+
+    document.querySelector("#image").src = data.url;
+    document.querySelector("#description").textContent = data.explanation;
+    document.querySelector("#title").textContent = data.title;
+
+    // Απενεργοποίηση κουμπιού "Next" αν είναι σημερινή ημερομηνία
+    document.querySelector("#next").disabled = date === today;
   } catch (error) {
-    console.error(error);
-    alert("Something went wrong. Please try again later.");
+    console.error("Error fetching image:", error);
   }
-}
+};
 
-// Εμφάνιση δεδομένων στην οθόνη
-function displayData(data) {
-  document.getElementById("title").textContent = data.title;
-  document.getElementById("description").textContent = data.explanation;
-  document.getElementById("image").src = data.url;
-  document.getElementById("image").alt = data.title;
-}
-
-// Υπολογισμός της προηγούμενης ημερομηνίας
-function getPreviousDate(date) {
-  const d = new Date(date);
-  d.setDate(d.getDate() - 1);
-  return d.toISOString().split("T")[0];
-}
-
-// Υπολογισμός της επόμενης ημερομηνίας
-function getNextDate(date) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().split("T")[0];
-}
-
-// Event listeners για κουμπιά
-document.getElementById("fetch-image").addEventListener("click", () => {
-  const date = document.getElementById("date-picker").value || currentDate;
-  fetchImageByDate(date);
+// Διαχείριση κουμπιού "Previous"
+document.querySelector("#previous").addEventListener("click", () => {
+  const newDate = new Date(currentDate);
+  newDate.setDate(newDate.getDate() - 1);
+  currentDate = newDate.toISOString().split("T")[0];
+  updateImage(currentDate);
 });
 
-document.getElementById("prev-image").addEventListener("click", () => {
-  const prevDate = getPreviousDate(currentDate);
-  fetchImageByDate(prevDate);
+// Διαχείριση κουμπιού "Next"
+document.querySelector("#next").addEventListener("click", () => {
+  const newDate = new Date(currentDate);
+  newDate.setDate(newDate.getDate() + 1);
+  currentDate = newDate.toISOString().split("T")[0];
+  updateImage(currentDate);
 });
 
-document.getElementById("next-image").addEventListener("click", () => {
-  const nextDate = getNextDate(currentDate);
-  fetchImageByDate(nextDate);
+// Διαχείριση αποθήκευσης εικόνας
+document.querySelector("#save").addEventListener("click", () => {
+  const imageUrl = document.querySelector("#image").src;
+  const link = document.createElement("a");
+  link.href = imageUrl;
+  link.download = "nasa_image.jpg";
+  link.click();
 });
 
-// Φέρνει την εικόνα της σημερινής ημέρας κατά την εκκίνηση
-fetchImageByDate(currentDate);
+// Αρχική εμφάνιση εικόνας
+updateImage(today);
